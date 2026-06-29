@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Eliru">
+<title>Eliru</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --surface2: #f2f2f7;
+  --surface3: #e5e5ea;
+  --border: rgba(60,60,67,0.12);
+  --text: #000000;
+  --text2: #3c3c43cc;
+  --text3: #3c3c4399;
+  --accent: #007aff;
+  --accent-bg: #e8f0fe;
+  --accent-text: #0055d4;
+  --green: #34c759;
+  --green-bg: #e8f8ed;
+  --green-text: #1c7a35;
+  --orange: #ff9500;
+  --orange-bg: #fff3e0;
+  --orange-text: #7a4800;
+  --purple: #af52de;
+  --purple-bg: #f5eeff;
+  --purple-text: #6a1fa0;
+  --red: #ff3b30;
+  --red-bg: #ffebea;
+  --red-text: #c0001c;
+  --teal-bg: #e0f7fa;
+  --teal-text: #006064;
+  --tab-h: 82px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000; --surface: #1c1c1e; --surface2: #2c2c2e; --surface3: #3a3a3c;
+    --border: rgba(255,255,255,0.1); --text: #ffffff; --text2: #ebebf5cc; --text3: #ebebf580;
+    --accent-bg: #0a2540; --accent-text: #4da3ff;
+    --green-bg: #0d2618; --green-text: #30d158;
+    --orange-bg: #2a1800; --orange-text: #ff9f0a;
+    --purple-bg: #1e0a30; --purple-text: #bf7fff;
+    --red-bg: #2a0a0a; --red-text: #ff6961;
+    --teal-bg: #001e20; --teal-text: #5ac8fa;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* ── NAV BAR ── */
+.nav-bar{position:absolute;bottom:0;left:0;right:0;height:var(--tab-h);background:var(--surface);border-top:0.5px solid var(--border);display:flex;align-items:flex-start;padding-top:10px;padding-bottom:env(safe-area-inset-bottom,0);z-index:100;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:2px 0}
+.nav-item i{font-size:22px;color:var(--text3);transition:color .15s}
+.nav-item span{font-size:10px;color:var(--text3);font-weight:500;transition:color .15s}
+.nav-item.active i,.nav-item.active span{color:var(--accent)}
+
+/* ── SCROLL AREA ── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + 16px)}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ── LARGE TITLE NAV ── */
+.large-nav{background:var(--surface);padding:52px 16px 0;position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(20px)}
+.large-title{font-size:34px;font-weight:700;letter-spacing:-0.5px;padding-bottom:8px}
+.large-title span{color:var(--accent)}
+.inline-nav{display:flex;align-items:center;justify-content:space-between;padding:8px 0 12px;border-bottom:0.5px solid var(--border)}
+.inline-title{font-size:17px;font-weight:600}
+.nav-action{font-size:17px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit}
+
+/* ── SECTION ── */
+.section{margin:20px 16px 0}
+.section-header{font-size:13px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;padding-left:4px}
+.list-card{background:var(--surface);border-radius:12px;overflow:hidden}
+.list-row{display:flex;align-items:center;padding:12px 14px;gap:12px;border-bottom:0.5px solid var(--border);cursor:pointer}
+.list-row:last-child{border-bottom:none}
+.list-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.list-text{flex:1;min-width:0}
+.list-title{font-size:16px;color:var(--text)}
+.list-sub{font-size:13px;color:var(--text3);margin-top:1px}
+.list-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.list-badge{font-size:12px;font-weight:500;padding:2px 8px;border-radius:10px}
+.chevron-r{font-size:14px;color:var(--text3)}
+
+/* ── HOME SCREEN ── */
+.hero-card{margin:16px 16px 0;background:var(--accent);border-radius:16px;padding:20px;overflow:hidden;position:relative}
+.hero-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.hero-sub{font-size:14px;color:rgba(255,255,255,0.8)}
+.hero-date{font-size:13px;color:rgba(255,255,255,0.7);margin-top:8px}
+.hero-prog{height:5px;background:rgba(255,255,255,0.3);border-radius:3px;margin-top:12px;overflow:hidden}
+.hero-fill{height:100%;background:#fff;border-radius:3px;width:24%}
+.hero-lbl{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;color:rgba(255,255,255,0.8)}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 16px 0}
+.stat-card{background:var(--surface);border-radius:12px;padding:14px}
+.stat-icon{font-size:22px;margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:700;color:var(--text)}
+.stat-lbl{font-size:13px;color:var(--text3);margin-top:2px}
+.streak-card{margin:16px 16px 0;background:var(--surface);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px}
+.streak-flame{font-size:40px}
+.streak-num{font-size:32px;font-weight:700;color:var(--orange)}
+.streak-lbl{font-size:14px;color:var(--text3)}
+
+/* ── WEEK LIST ── */
+.week-card{background:var(--surface);border-radius:12px;margin:0 16px 8px;overflow:hidden}
+.week-card.cur{box-shadow:0 0 0 2px var(--accent)}
+.week-card.vac{box-shadow:0 0 0 2px var(--green)}
+.week-hdr{display:flex;align-items:center;padding:13px 14px;gap:12px;cursor:pointer}
+.week-badge{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bd-done{background:var(--green-bg);color:var(--green-text)}
+.bd-cur{background:var(--accent-bg);color:var(--accent-text)}
+.bd-fut{background:var(--surface2);color:var(--text3)}
+.bd-race{background:var(--orange-bg);color:var(--orange-text)}
+.winfo{flex:1;min-width:0}
+.wtitle{font-size:16px;font-weight:600;color:var(--text)}
+.wdate{font-size:13px;color:var(--text3);margin-top:1px}
+.wright{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.wkm{font-size:14px;font-weight:600;color:var(--text)}
+.wtag{font-size:11px;font-weight:500;padding:3px 8px;border-radius:10px}
+.tg-done{background:var(--green-bg);color:var(--green-text)}
+.tg-cur{background:var(--accent-bg);color:var(--accent-text)}
+.tg-race{background:var(--orange-bg);color:var(--orange-text)}
+.tg-vac{background:var(--green-bg);color:var(--green-text)}
+.tg-bld{background:var(--purple-bg);color:var(--purple-text)}
+.chev{font-size:16px;color:var(--text3);transition:transform .2s}
+.chev.op{transform:rotate(90deg)}
+.week-body{display:none;border-top:0.5px solid var(--border)}
+.week-body.op{display:block}
+
+/* ── WEEK STATS ── */
+.w-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px 14px;border-bottom:0.5px solid var(--border)}
+.ws{background:var(--surface2);border-radius:9px;padding:9px 10px}
+.ws-lbl{font-size:10px;color:var(--text3);font-weight:500;margin-bottom:3px}
+.ws-val{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;justify-content:space-between}
+.ws-val input{font-size:13px;font-weight:600;color:var(--text);background:transparent;border:none;outline:none;width:75%;font-family:inherit}
+.edit-btn{color:var(--text3);background:none;border:none;cursor:pointer;padding:0;font-size:13px}
+
+/* ── SESSIONS ── */
+.sessions{padding:6px 14px 12px}
+.s-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.s-row:last-of-type{border-bottom:none}
+.s-day{font-size:11px;font-weight:600;color:var(--text3);width:26px;flex-shrink:0;padding-top:8px}
+.s-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ic-run{background:var(--accent-bg);color:var(--accent-text)}
+.ic-rest{background:var(--surface2);color:var(--text3)}
+.ic-gym{background:var(--purple-bg);color:var(--purple-text)}
+.ic-yoga{background:var(--green-bg);color:var(--green-text)}
+.ic-swim{background:var(--teal-bg);color:var(--teal-text)}
+.ic-tempo{background:var(--orange-bg);color:var(--orange-text)}
+.ic-long{background:var(--red-bg);color:var(--red-text)}
+.ic-race{background:var(--orange-bg);color:var(--orange-text)}
+.ic-vac{background:var(--green-bg);color:var(--green-text)}
+.ic-hill{background:var(--orange-bg);color:var(--orange-text)}
+.s-detail{flex:1;min-width:0}
+.s-name{font-size:15px;font-weight:500;color:var(--text)}
+.s-sub{font-size:12px;color:var(--text3);margin-top:2px;line-height:1.4}
+.s-hf{display:inline-flex;align-items:center;gap:3px;background:var(--red-bg);color:var(--red-text);font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;margin-top:3px;margin-right:3px}
+.s-pace{display:inline-flex;align-items:center;gap:3px;background:var(--accent-bg);color:var(--accent-text);font-size:10px;font-weight:600;padding:1px 6px;border-radius:8px;margin-top:3px}
+.s-top{display:flex;align-items:flex-start;justify-content:space-between;gap:4px}
+.s-edit-btn{color:var(--text3);background:none;border:none;cursor:pointer;padding:3px;font-size:15px;flex-shrink:0}
+.s-edit-area{margin-top:6px}
+.s-edit-area input,.s-edit-area textarea{font-size:14px;color:var(--text);background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;width:100%;font-family:inherit;outline:none;margin-bottom:6px}
+.s-edit-area textarea{resize:none}
+.s-edit-area input:focus,.s-edit-area textarea:focus{border-color:var(--accent)}
+.s-actions{display:flex;gap:8px}
+.s-btn{font-size:14px;font-weight:500;padding:7px 16px;border-radius:10px;border:1.5px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer}
+.s-btn.save{background:var(--accent);color:#fff;border-color:var(--accent)}
+.add-row{display:flex;align-items:center;gap:6px;padding:8px 0 2px;color:var(--accent);font-size:14px;font-weight:500;background:none;border:none;cursor:pointer;width:100%}
+
+/* ── FILTER TABS ── */
+.filter-bar{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.ftab{flex-shrink:0;font-size:14px;font-weight:500;padding:6px 14px;border-radius:20px;background:var(--surface);color:var(--text2);border:none;cursor:pointer}
+.ftab.on{background:var(--accent);color:#fff}
+
+/* ── PROFILE SCREEN ── */
+.profile-hero{background:var(--surface);padding:24px 16px 16px;text-align:center;border-bottom:0.5px solid var(--border)}
+.avatar{width:80px;height:80px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--accent);margin:0 auto 12px}
+.profile-name{font-size:22px;font-weight:700;color:var(--text)}
+.profile-sub{font-size:14px;color:var(--text3);margin-top:3px}
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:0.5px solid var(--border)}
+.info-lbl{font-size:16px;color:var(--text)}
+.info-val{font-size:16px;color:var(--text3)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--tab-h) + 16px);left:50%;transform:translateX(-50%);background:rgba(28,28,30,0.92);color:#fff;font-size:14px;font-weight:500;padding:10px 20px;border-radius:20px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999;-webkit-backdrop-filter:blur(10px);white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── PROGRESS SCREEN ── */
+.prog-section{margin:20px 16px 0}
+.prog-title{font-size:20px;font-weight:600;color:var(--text);margin-bottom:12px}
+.zone-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.zone-label{font-size:13px;font-weight:600;width:24px;color:var(--text2)}
+.zone-bar-wrap{flex:1;height:8px;background:var(--surface3);border-radius:4px;overflow:hidden}
+.zone-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.zone-pct{font-size:12px;font-weight:600;color:var(--text3);width:36px;text-align:right}
+.goal-item{display:flex;align-items:center;gap:14px;padding:14px;background:var(--surface);border-radius:12px;margin-bottom:8px}
+.goal-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.goal-text{flex:1}
+.goal-name{font-size:15px;font-weight:600;color:var(--text)}
+.goal-detail{font-size:13px;color:var(--text3);margin-top:2px}
+.goal-check{font-size:20px}
+</style>
+</head>
+<body>
+
+<!-- ═══ HOME SCREEN ═══ -->
+<div class="screen active" id="screen-home">
+  <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + 16px)">
+    <div class="large-nav">
+      <div class="large-title">eli<span>ru</span></div>
+      <div class="inline-nav">
+        <span class="inline-title">Heute</span>
+        <span style="font-size:13px;color:var(--text3)" id="today-date"></span>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-title">Zürich Halbmarathon</div>
+      <div class="hero-sub">11. April 2027 · Ziel: sub 1:55</div>
+      <div class="hero-date" id="countdown"></div>
+      <div class="hero-prog"><div class="hero-fill"></div></div>
+      <div class="hero-lbl"><span>W10 von 41</span><span>24% abgeschlossen</span></div>
+    </div>
+    <div class="streak-card">
+      <div class="streak-flame"><i class="ti ti-flame" style="font-size:40px;color:var(--orange)"></i></div>
+      <div>
+        <div class="streak-num">27</div>
+        <div class="streak-lbl">Tage Streak</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:22px;font-weight:700;color:var(--text)">121 km</div>
+        <div style="font-size:13px;color:var(--text3)">Juni Total</div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--accent)"><i class="ti ti-heart-rate-monitor"></i></div>
+        <div class="stat-val">152</div>
+        <div class="stat-lbl">Ø HF heute</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--green-text)"><i class="ti ti-run"></i></div>
+        <div class="stat-val">6:58</div>
+        <div class="stat-lbl">Letzte Pace</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--orange)"><i class="ti ti-map-pin"></i></div>
+        <div class="stat-val">16 km</div>
+        <div class="stat-lbl">Letzter Long Run</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="color:var(--purple-text)"><i class="ti ti-trophy"></i></div>
+        <div class="stat-val">2:22</div>
+        <div class="stat-lbl">Winti HM</div>
+      </div>
+    </div>
+    <div class="section" style="margin-bottom:8px">
+      <div class="section-header">Diese Woche — Woche 11</div>
+      <div class="list-card">
+        <div class="list-row"><div class="list-icon ic-rest"><i class="ti ti-moon"></i></div><div class="list-text"><div class="list-title">Mo — Rest</div></div><div class="list-right"><span style="font-size:12px;color:var(--green-text)">Heute</span></div></div>
+        <div class="list-row"><div class="list-icon ic-run"><i class="ti ti-run"></i></div><div class="list-text"><div class="list-title">Di — 8 km easy</div><div class="list-sub">6:45–7:10 · HF unter 150</div></div></div>
+        <div class="list-row"><div class="list-icon ic-gym"><i class="ti ti-barbell"></i></div><div class="list-text"><div class="list-title">Mi — Strength / Pilates</div><div class="list-sub">Core + Glutes</div></div></div>
+        <div class="list-row"><div class="list-icon ic-tempo"><i class="ti ti-bolt"></i></div><div class="list-text"><div class="list-title">Do — 4×12 min Tempo</div><div class="list-sub">5:55–6:05 · Z4</div></div></div>
+        <div class="list-row"><div class="list-icon ic-rest"><i class="ti ti-moon"></i></div><div class="list-text"><div class="list-title">Fr — Rest</div></div></div>
+        <div class="list-row"><div class="list-icon ic-run"><i class="ti ti-run"></i></div><div class="list-text"><div class="list-title">Sa — 35 min recovery</div><div class="list-sub">HF unter 140</div></div></div>
+        <div class="list-row" style="border-bottom:none"><div class="list-icon ic-long"><i class="ti ti-map-pin"></i></div><div class="list-text"><div class="list-title">So — Long Run 17 km</div><div class="list-sub">No pace · HF Ø unter 155</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PLAN SCREEN ═══ -->
+<div class="screen" id="screen-plan">
+  <div style="background:var(--surface);padding:52px 16px 0;position:sticky;top:0;z-index:50">
+    <div style="font-size:34px;font-weight:700;letter-spacing:-0.5px;padding-bottom:8px">eli<span style="color:var(--accent)">ru</span></div>
+    <div style="display:flex;align-items:center;padding:8px 0 0;border-bottom:0.5px solid var(--border)">
+      <span style="font-size:17px;font-weight:600;flex:1">Trainingsplan</span>
+      <span style="font-size:13px;color:var(--text3)">41 Wochen</span>
+    </div>
+    <div class="filter-bar">
+      <button class="ftab on" onclick="filterW('all',this)">Alle</button>
+      <button class="ftab" onclick="filterW('done',this)">Fertig</button>
+      <button class="ftab" onclick="filterW('cur',this)">Aktuell</button>
+      <button class="ftab" onclick="filterW('build',this)">Aufbau</button>
+      <button class="ftab" onclick="filterW('hm',this)">HM Plan</button>
+    </div>
+  </div>
+  <div class="scroll" id="wlist-scroll">
+    <div id="wlist" style="padding-top:8px"></div>
+  </div>
+</div>
+
+<!-- ═══ PROGRESS SCREEN ═══ -->
+<div class="screen" id="screen-progress">
+  <div style="background:var(--surface);padding:52px 16px 12px;border-bottom:0.5px solid var(--border)">
+    <div style="font-size:34px;font-weight:700;letter-spacing:-0.5px">Fortschritt</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + 16px)">
+    <div class="prog-section">
+      <div class="prog-title">Juni 2026 — Zonen</div>
+      <div style="background:var(--surface);border-radius:12px;padding:16px">
+        <div class="zone-row"><span class="zone-label">Z1</span><div class="zone-bar-wrap"><div class="zone-bar-fill" style="width:16%;background:var(--green)"></div></div><span class="zone-pct">16%</span></div>
+        <div class="zone-row"><span class="zone-label">Z2</span><div class="zone-bar-wrap"><div class="zone-bar-fill" style="width:20%;background:var(--accent)"></div></div><span class="zone-pct">20%</span></div>
+        <div class="zone-row"><span class="zone-label">Z3</span><div class="zone-bar-wrap"><div class="zone-bar-fill" style="width:44%;background:var(--orange)"></div></div><span class="zone-pct">44%</span></div>
+        <div class="zone-row"><span class="zone-label">Z4</span><div class="zone-bar-wrap"><div class="zone-bar-fill" style="width:14%;background:#ff6b35"></div></div><span class="zone-pct">14%</span></div>
+        <div class="zone-row"><span class="zone-label">Z5</span><div class="zone-bar-wrap"><div class="zone-bar-fill" style="width:6%;background:var(--red)"></div></div><span class="zone-pct">6%</span></div>
+        <div style="margin-top:10px;font-size:12px;color:var(--text3);padding-left:34px">Ziel: Z2 auf 65% bringen (aktuell 20%)</div>
+      </div>
+    </div>
+    <div class="prog-section">
+      <div class="prog-title">Pace-Entwicklung</div>
+      <div style="background:var(--surface);border-radius:12px;overflow:hidden">
+        <div class="info-row"><span class="info-lbl">März 2025</span><span class="info-val">8:30 /km @ 145 bpm</span></div>
+        <div class="info-row"><span class="info-lbl">Jan 2026</span><span class="info-val">7:30 /km @ 147 bpm</span></div>
+        <div class="info-row"><span class="info-lbl">Jun 2026</span><span class="info-val" style="color:var(--green-text);font-weight:600">6:47 /km @ 147 bpm</span></div>
+        <div class="info-row" style="border-bottom:none"><span class="info-lbl">Ziel Nov 2026</span><span class="info-val">6:20 /km @ 147 bpm</span></div>
+      </div>
+    </div>
+    <div class="prog-section">
+      <div class="prog-title">Ziele</div>
+      <div class="goal-item"><div class="goal-icon-wrap" style="background:var(--green-bg)"><i class="ti ti-check" style="color:var(--green-text)"></i></div><div class="goal-text"><div class="goal-name">Winti HM</div><div class="goal-detail">2:22 · 31. Mai 2026 · 28°C</div></div><span class="goal-check" style="color:var(--green-text)"><i class="ti ti-circle-check"></i></span></div>
+      <div class="goal-item"><div class="goal-icon-wrap" style="background:var(--orange-bg)"><i class="ti ti-run" style="color:var(--orange)"></i></div><div class="goal-text"><div class="goal-name">10km sub 60 min</div><div class="goal-detail">Geplant: Juli 2026</div></div><span class="goal-check" style="color:var(--text3)"><i class="ti ti-clock"></i></span></div>
+      <div class="goal-item"><div class="goal-icon-wrap" style="background:var(--accent-bg)"><i class="ti ti-medal" style="color:var(--accent-text)"></i></div><div class="goal-text"><div class="goal-name">HM Oktober sub 2:05</div><div class="goal-detail">Oktober 2026</div></div><span class="goal-check" style="color:var(--text3)"><i class="ti ti-clock"></i></span></div>
+      <div class="goal-item"><div class="goal-icon-wrap" style="background:var(--purple-bg)"><i class="ti ti-trophy" style="color:var(--purple-text)"></i></div><div class="goal-text"><div class="goal-name">Zürich HM sub 1:55</div><div class="goal-detail">11. April 2027</div></div><span class="goal-check" style="color:var(--text3)"><i class="ti ti-clock"></i></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROFILE SCREEN ═══ -->
+<div class="screen" id="screen-profile">
+  <div style="background:var(--surface);padding:52px 16px 12px;border-bottom:0.5px solid var(--border)">
+    <div style="font-size:34px;font-weight:700;letter-spacing:-0.5px">Profil</div>
+  </div>
+  <div style="overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + 16px)">
+    <div class="profile-hero">
+      <div class="avatar">EZ</div>
+      <div class="profile-name">Elham Zahedian</div>
+      <div class="profile-sub">Winterthur · Läuferin seit 2025</div>
+    </div>
+    <div class="section">
+      <div class="section-header">Körper</div>
+      <div class="list-card">
+        <div class="info-row"><span class="info-lbl">Gewicht</span><span class="info-val">63.3 kg</span></div>
+        <div class="info-row"><span class="info-lbl">Grösse</span><span class="info-val">160 cm</span></div>
+        <div class="info-row"><span class="info-lbl">Alter</span><span class="info-val">35 Jahre</span></div>
+        <div class="info-row" style="border-bottom:none"><span class="info-lbl">Zielgewicht</span><span class="info-val" style="color:var(--accent)">60 kg</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">Labor (Schulthess, Feb 2026)</div>
+      <div class="list-card">
+        <div class="info-row"><span class="info-lbl">HFmax</span><span class="info-val" style="color:var(--red-text);font-weight:600">191 bpm</span></div>
+        <div class="info-row"><span class="info-lbl">Ruhepuls</span><span class="info-val">55 bpm</span></div>
+        <div class="info-row"><span class="info-lbl">Laktatschwelle</span><span class="info-val">164 bpm</span></div>
+        <div class="info-row"><span class="info-lbl">VO2max</span><span class="info-val">43 — Top 20%</span></div>
+        <div class="info-row" style="border-bottom:none"><span class="info-lbl">HRV</span><span class="info-val">52 ms</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">Herzfrequenz-Zonen</div>
+      <div class="list-card">
+        <div class="info-row"><span class="info-lbl" style="color:var(--green-text)">Z1</span><span class="info-val">unter 140 bpm</span></div>
+        <div class="info-row"><span class="info-lbl" style="color:var(--accent)">Z2</span><span class="info-val">140–150 bpm</span></div>
+        <div class="info-row"><span class="info-lbl" style="color:var(--orange)">Z3</span><span class="info-val">151–160 bpm</span></div>
+        <div class="info-row"><span class="info-lbl" style="color:#ff6b35">Z4</span><span class="info-val">161–170 bpm</span></div>
+        <div class="info-row" style="border-bottom:none"><span class="info-lbl" style="color:var(--red-text)">Z5</span><span class="info-val">171–191 bpm</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">Ausrüstung</div>
+      <div class="list-card">
+        <div class="list-row"><div class="list-icon" style="background:var(--surface2);color:var(--text3)"><i class="ti ti-watch"></i></div><div class="list-text"><div class="list-title">Garmin Forerunner 570</div></div></div>
+        <div class="list-row"><div class="list-icon" style="background:var(--surface2);color:var(--text3)"><i class="ti ti-shoe"></i></div><div class="list-text"><div class="list-title">Brooks Glycerin 23</div><div class="list-sub">Training</div></div></div>
+        <div class="list-row" style="border-bottom:none"><div class="list-icon" style="background:var(--surface2);color:var(--text3)"><i class="ti ti-shoe"></i></div><div class="list-text"><div class="list-title">Brooks Hyperion Max 3</div><div class="list-sub">Tempo & Rennen</div></div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">Trainerin</div>
+      <div class="list-card">
+        <div class="info-row"><span class="info-lbl">Name</span><span class="info-val">Marjan Mahbod</span></div>
+        <div class="info-row" style="border-bottom:none"><span class="info-lbl">Plan</span><span class="info-val">10 Wochen absolviert</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<div class="nav-bar">
+  <div class="nav-item active" id="nav-home" onclick="showScreen('home')">
+    <i class="ti ti-home"></i><span>Home</span>
+  </div>
+  <div class="nav-item" id="nav-plan" onclick="showScreen('plan')">
+    <i class="ti ti-calendar"></i><span>Plan</span>
+  </div>
+  <div class="nav-item" id="nav-progress" onclick="showScreen('progress')">
+    <i class="ti ti-chart-bar"></i><span>Fortschritt</span>
+  </div>
+  <div class="nav-item" id="nav-profile" onclick="showScreen('profile')">
+    <i class="ti ti-user"></i><span>Profil</span>
+  </div>
+</div>
+
+<div class="toast" id="toast">Gespeichert</div>
+
+<script>
+// ── SCREEN NAVIGATION
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-'+id).classList.add('active');
+  if(id==='plan') render();
+}
+
+// ── DATE / COUNTDOWN
+const today = new Date();
+document.getElementById('today-date').textContent = today.toLocaleDateString('de-CH',{weekday:'long',day:'numeric',month:'long'});
+const race = new Date('2027-04-11');
+const diff = Math.ceil((race-today)/(1000*60*60*24));
+document.getElementById('countdown').textContent = diff + ' Tage bis Zürich HM';
+
+// ── TOAST
+function toast(){const t=document.getElementById('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1500);}
+
+// ── TYPES
+const T={run:{i:'ti-run',c:'ic-run'},rest:{i:'ti-moon',c:'ic-rest'},gym:{i:'ti-barbell',c:'ic-gym'},yoga:{i:'ti-leaf',c:'ic-yoga'},swim:{i:'ti-waves',c:'ic-swim'},tempo:{i:'ti-bolt',c:'ic-tempo'},long:{i:'ti-map-pin',c:'ic-long'},race:{i:'ti-trophy',c:'ic-race'},vac:{i:'ti-plane',c:'ic-vac'},hill:{i:'ti-trending-up',c:'ic-hill'}};
+
+// ── DATA
+let data=[
+  {n:1,p:'done',d:'20–26 Apr 26',km:25,tag:'Fertig',hf:'Z2: 140–150',pace:'6:50–7:15',s:[{d:'Mo',t:'run',n:'6–7 km easy',s:'6:50–7:15 /km · HF unter 150'},{d:'Di',t:'gym',n:'Gym light',s:'Core + Glutes'},{d:'Mi',t:'tempo',n:'6×400m',s:'@ 5:45–6:00 /km'},{d:'Do',t:'rest',n:'Rest',s:''},{d:'Fr',t:'run',n:'6 km easy',s:'6:50–7:15 /km'},{d:'Sa',t:'long',n:'Long Run 12 km',s:'6:50–7:20 /km'},{d:'So',t:'run',n:'30 min recovery',s:'HF unter 140'}]},
+  {n:2,p:'done',d:'27 Apr–3 Mai',km:28,tag:'Fertig',hf:'Z2: 140–150',pace:'6:45–7:10',s:[{d:'Mo',t:'run',n:'7 km easy',s:'6:45–7:10 /km'},{d:'Di',t:'gym',n:'Gym / Pilates',s:''},{d:'Mi',t:'tempo',n:'4×500m + 3×200m',s:'5:40 /km · Z4–5'},{d:'Do',t:'rest',n:'Rest',s:''},{d:'Fr',t:'run',n:'6–7 km easy',s:'6:45–7:15 /km'},{d:'Sa',t:'long',n:'Long Run 14 km',s:'6:50–7:20 /km'},{d:'So',t:'run',n:'30 min recovery',s:'HF unter 140'}]},
+  {n:3,p:'done',d:'4–10 Mai',km:28,tag:'Fertig',hf:'Z2: 140–150',pace:'6:45–7:10',s:[{d:'Mo',t:'run',n:'7 km easy',s:''},{d:'Di',t:'gym',n:'Strength / Pilates',s:''},{d:'Mi',t:'tempo',n:'3×8 min @ 6:00–6:10',s:'Broken Tempo'},{d:'Do',t:'rest',n:'Rest',s:''},{d:'Fr',t:'run',n:'6–7 km easy',s:''},{d:'Sa',t:'long',n:'Long Run 14 km',s:'6:50–7:15 /km'},{d:'So',t:'run',n:'30–40 min recovery',s:''}]},
+  {n:4,p:'done',d:'11–17 Mai',km:30,tag:'Fertig',hf:'Z2: 140–150',pace:'6:45–7:05',s:[{d:'Mo',t:'run',n:'7–8 km easy',s:''},{d:'Di',t:'gym',n:'Strength',s:''},{d:'Mi',t:'tempo',n:'6×2 min + 3×200m',s:'@ 5:45 /km'},{d:'Do',t:'rest',n:'Rest',s:''},{d:'Fr',t:'run',n:'7 km easy',s:''},{d:'Sa',t:'long',n:'Long Run 15 km',s:'6:50–7:10 /km'},{d:'So',t:'run',n:'30–40 min recovery',s:''}]},
+  {n:5,p:'done',d:'18–24 Mai',km:30,tag:'Fertig',hf:'Z2: 140–150',pace:'6:45–7:10',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'7 km easy',s:''},{d:'Mi',t:'tempo',n:'2×12 min @ 6:05–6:15',s:'HM Rhythmus'},{d:'Do',t:'run',n:'6–7 km easy',s:''},{d:'Fr',t:'gym',n:'Strength / Pilates',s:''},{d:'Sa',t:'run',n:'30–35 min recovery',s:''},{d:'So',t:'long',n:'Long Run 16 km',s:'6:50–7:10 /km'}]},
+  {n:6,p:'done',d:'25–31 Mai',km:35,tag:'HM Woche',hf:'Z2–Z3',pace:'6:50–7:15',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'6–7 km easy',s:''},{d:'Mi',t:'tempo',n:'4×5 min @ 5:55–6:05',s:'Sharpening'},{d:'Do',t:'run',n:'5–6 km sehr locker',s:'HF unter 145'},{d:'Fr',t:'gym',n:'Mobility light',s:''},{d:'Sa',t:'run',n:'Shakeout 20–25 min',s:'+ 3 Strides'},{d:'So',t:'race',n:'Winti HM',s:'2:22 @ 28°C'}]},
+  {n:7,p:'done',d:'1–7 Jun',km:20,tag:'Fertig',hf:'Z1–Z2',pace:'7:20+',s:[{d:'Mo',t:'rest',n:'Rest',s:'Nach Winti'},{d:'Di',t:'run',n:'30 min easy',s:''},{d:'Mi',t:'yoga',n:'Rest / Yoga',s:'Stretching'},{d:'Do',t:'run',n:'45 min easy',s:'6:55–7:20 /km'},{d:'Fr',t:'hill',n:'Hill Session 6×45s',s:'HF bis 170'},{d:'Sa',t:'rest',n:'Rest',s:''},{d:'So',t:'long',n:'Long Run 12 km',s:'No pace'}]},
+  {n:8,p:'done',d:'8–14 Jun',km:28,tag:'Fertig',hf:'Z2–Z3',pace:'6:50–7:15',s:[{d:'Mo',t:'run',n:'35 min recovery',s:''},{d:'Di',t:'run',n:'7 km easy',s:'HF unter 150'},{d:'Mi',t:'gym',n:'Strength / Pilates',s:''},{d:'Do',t:'tempo',n:'Ladder Tempo',s:'4→6→8→6→4 min'},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'7 km easy',s:''},{d:'So',t:'long',n:'Long Run 14 km',s:'No pace'}]},
+  {n:9,p:'done',d:'15–21 Jun',km:33,tag:'Fertig',hf:'Z2–Z3',pace:'6:45–7:10',s:[{d:'Mi',t:'hill',n:'Hill 8×45s Progression',s:'HF bis 172'},{d:'Do',t:'run',n:'7 km easy',s:'HF unter 150'},{d:'Fr',t:'gym',n:'Strength / Pilates',s:''},{d:'Sa',t:'run',n:'35 min recovery',s:''},{d:'So',t:'long',n:'Long Run 15 km',s:'6:40 Ø · HF 157 · 6PR'},{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'8 km easy',s:''}]},
+  {n:10,p:'done',d:'22–28 Jun',km:40,tag:'Fertig',hf:'Z2: 147–152',pace:'6:45–7:00',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'8 km easy',s:'6:54 Ø · HF 150'},{d:'Mi',t:'tempo',n:'Cruise 3×10 min',s:'5:55–6:05 · 11PR'},{d:'Do',t:'run',n:'7 km easy',s:'6:56 Ø · HF 147'},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'RRun <140 · 4 km',s:'8:48 Ø'},{d:'So',t:'long',n:'Long Run 16 km',s:'6:58 Ø · HF 152 · 2PR'}]},
+  {n:11,p:'cur',d:'29 Jun–5 Jul',km:42,tag:'Aktuell',hf:'Z2: 140–150',pace:'6:45–7:10',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'8 km easy',s:'6:45–7:10 /km · HF unter 150'},{d:'Mi',t:'gym',n:'Strength / Pilates',s:'Core + Glutes + Stability'},{d:'Do',t:'tempo',n:'4×12 min @ 5:55–6:05',s:'2 min Recovery · Z4'},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'35 min recovery',s:'HF unter 140'},{d:'So',t:'long',n:'Long Run 17 km',s:'HF Ø unter 155'}]},
+  {n:12,p:'cur',d:'6–12 Jul',km:44,tag:'Aktuell',hf:'Z2: 140–150',pace:'6:45–7:10',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'8 km easy',s:'HF unter 150'},{d:'Mi',t:'gym',n:'Strength / Pilates',s:''},{d:'Do',t:'tempo',n:'Hill + Speed Kombi',s:'6×1min + 4×200m @ 5:00–5:15'},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 18 km',s:''}]},
+  {n:13,p:'cur',d:'13–23 Jul',km:35,tag:'10km Test',hf:'Z2–Z4',pace:'Test',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'7 km easy',s:'HF unter 148'},{d:'Mi',t:'gym',n:'Strength light',s:''},{d:'Do',t:'run',n:'6 km sehr locker',s:''},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'Shakeout 20 min',s:''},{d:'So',t:'race',n:'10km Test',s:'Ziel: sub 60 min'}]},
+  {n:14,p:'build',d:'24 Jul–3 Aug',km:20,tag:'SF Reise',hf:'Z1–Z2',pace:'locker',s:[{d:'',t:'vac',n:'San Francisco',s:'3–4x 30–40 min easy'},{d:'',t:'swim',n:'Schwimmen',s:'Aktive Erholung'},{d:'',t:'yoga',n:'Yoga täglich',s:''},{d:'',t:'vac',n:'Wandern',s:'Z1–Z2 Training'}]},
+  {n:15,p:'build',d:'4–10 Aug',km:38,tag:'Comeback',hf:'Z2: 140–150',pace:'6:50–7:15',s:[{d:'Mo',t:'rest',n:'Rest',s:'Nach SF'},{d:'Di',t:'run',n:'6 km easy',s:'Beine testen'},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'run',n:'8 km easy',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:'30 min'},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 16 km',s:'HF Ø unter 155'}]},
+  {n:16,p:'build',d:'11–17 Aug',km:42,tag:'Aufbau',hf:'Z2: 140–150',pace:'6:45–7:10',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'tempo',n:'3×12 min @ 5:55–6:05',s:'Z3–4'},{d:'Do',t:'gym',n:'Kraft',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 18 km',s:''}]},
+  {n:17,p:'build',d:'18–24 Aug',km:46,tag:'Aufbau',hf:'Z2: 140–150',pace:'6:45–7:05',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'9 km easy',s:''},{d:'Mi',t:'gym',n:'Kraft',s:''},{d:'Do',t:'tempo',n:'5×1000m @ 5:45–5:55',s:'90s Recovery'},{d:'Fr',t:'yoga',n:'Yoga',s:''},{d:'Sa',t:'run',n:'9 km easy',s:''},{d:'So',t:'long',n:'Long Run 20 km',s:''}]},
+  {n:18,p:'build',d:'25–31 Aug',km:50,tag:'Aufbau',hf:'Z2–Z3',pace:'6:45–7:00',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'9 km easy',s:''},{d:'Mi',t:'gym',n:'Kraft',s:''},{d:'Do',t:'tempo',n:'4×15 min @ 6:00–6:10',s:'Z3–4'},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'9 km easy',s:''},{d:'So',t:'long',n:'Long Run 22 km',s:''}]},
+  {n:19,p:'build',d:'1–7 Sep',km:38,tag:'Recovery',hf:'Z1–Z2',pace:'7:00–7:30',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'7 km easy',s:''},{d:'Mi',t:'yoga',n:'Yoga / Pilates',s:''},{d:'Do',t:'run',n:'8 km easy',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'7 km easy',s:''},{d:'So',t:'long',n:'Long Run 16 km',s:'Recovery'}]},
+  {n:20,p:'build',d:'8–12 Okt',km:45,tag:'HM Test',hf:'Z2–Z4',pace:'6:00–6:10',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'9 km easy',s:''},{d:'Mi',t:'tempo',n:'2×20 min @ 6:00–6:10',s:''},{d:'Do',t:'gym',n:'Kraft',s:''},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'35 min locker',s:''},{d:'So',t:'race',n:'HM Oktober Test',s:'Ziel: sub 2:05'}]},
+  {n:21,p:'build',d:'13–26 Okt',km:28,tag:'Recovery',hf:'Z1–Z2',pace:'7:15+',s:[{d:'',t:'run',n:'Recovery nach HM',s:'Easy Läufe'},{d:'',t:'yoga',n:'Yoga täglich',s:''},{d:'',t:'swim',n:'Schwimmen',s:'1–2x /Woche'}]},
+  {n:22,p:'hm',d:'27 Okt–2 Nov',km:42,tag:'Winter',hf:'Z2',pace:'6:50–7:15',s:[{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'Tempo Session',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 20 km',s:''}]},
+  {n:23,p:'hm',d:'3–9 Nov',km:45,tag:'Winter',hf:'Z2',pace:'6:45–7:10',s:[{d:'Di',t:'run',n:'9 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'Tempo',s:''},{d:'Fr',t:'yoga',n:'Yoga',s:''},{d:'Sa',t:'run',n:'9 km easy',s:''},{d:'So',t:'long',n:'Long Run 22 km',s:''}]},
+  {n:24,p:'hm',d:'10–16 Nov',km:48,tag:'Winter',hf:'Z2',pace:'6:40–7:00',s:[{d:'Di',t:'run',n:'9 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'5×1000m @ 5:40–5:50',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'9 km easy',s:''},{d:'So',t:'long',n:'Long Run 24 km',s:''}]},
+  {n:25,p:'hm',d:'17–23 Nov',km:45,tag:'Recovery',hf:'Z1–Z2',pace:'7:00+',s:[{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'yoga',n:'Yoga / Pilates',s:''},{d:'Do',t:'run',n:'8 km easy',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'7 km easy',s:''},{d:'So',t:'long',n:'Long Run 20 km',s:''}]},
+  {n:26,p:'hm',d:'24–30 Nov',km:50,tag:'Winter',hf:'Z2',pace:'6:40–7:00',s:[{d:'Di',t:'run',n:'10 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'Cruise 4×12 min',s:'Z3–4'},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'10 km easy',s:''},{d:'So',t:'long',n:'Long Run 24 km',s:''}]},
+  {n:27,p:'hm',d:'1–21 Dez',km:35,tag:'Weihnachten',hf:'Z1–Z2',pace:'locker',s:[{d:'',t:'run',n:'3x /Woche locker',s:'18–20 km Long Run'},{d:'',t:'yoga',n:'Yoga täglich',s:''},{d:'',t:'swim',n:'Schwimmen',s:''},{d:'',t:'gym',n:'Gym leicht',s:''}]},
+  {n:28,p:'hm',d:'22 Dez–4 Jan',km:30,tag:'Ferien',hf:'Z1–Z2',pace:'locker',s:[{d:'',t:'vac',n:'Ferien aktiv',s:'3x laufen'},{d:'',t:'yoga',n:'Yoga täglich',s:''}]},
+  {n:29,p:'hm',d:'5–11 Jan',km:52,tag:'Aufbau',hf:'Z2',pace:'6:40–7:00',s:[{d:'Di',t:'run',n:'10 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'Tempo Session',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'10 km easy',s:''},{d:'So',t:'long',n:'Long Run 22 km',s:''}]},
+  {n:30,p:'hm',d:'12–18 Jan',km:55,tag:'Aufbau',hf:'Z2',pace:'6:35–6:55',s:[{d:'Di',t:'run',n:'10 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'3×20 min @ 5:55–6:05',s:''},{d:'Fr',t:'yoga',n:'Yoga',s:''},{d:'Sa',t:'run',n:'10 km easy',s:''},{d:'So',t:'long',n:'Long Run 24 km',s:''}]},
+  {n:31,p:'hm',d:'19–25 Jan',km:55,tag:'Peak',hf:'Z2–Z3',pace:'6:30–6:50',s:[{d:'Di',t:'run',n:'10 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'5×1200m @ 5:35–5:45',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'10 km easy',s:''},{d:'So',t:'long',n:'Long Run 26 km',s:''}]},
+  {n:32,p:'hm',d:'26 Jan–1 Feb',km:58,tag:'Peak',hf:'Z2–Z3',pace:'6:25–6:45',s:[{d:'Di',t:'run',n:'10 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'Cruise 3×20 min',s:'Z3–4'},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'10 km easy',s:''},{d:'So',t:'long',n:'Long Run 28 km',s:''}]},
+  {n:33,p:'hm',d:'2–8 Feb',km:55,tag:'Recovery',hf:'Z1–Z2',pace:'7:00+',s:[{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'yoga',n:'Yoga / Pilates',s:''},{d:'Do',t:'run',n:'9 km easy',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 22 km',s:'Recovery'}]},
+  {n:34,p:'hm',d:'9–15 Feb',km:62,tag:'Peak',hf:'Z2–Z3',pace:'6:20–6:40',s:[{d:'Di',t:'run',n:'10 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'4×20 min @ 5:50–5:58',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'10 km easy',s:''},{d:'So',t:'long',n:'Long Run 30 km',s:''}]},
+  {n:35,p:'hm',d:'16–22 Feb',km:50,tag:'Recovery',hf:'Z1–Z2',pace:'7:00+',s:[{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'yoga',n:'Yoga',s:''},{d:'Do',t:'run',n:'9 km easy',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 22 km',s:''}]},
+  {n:36,p:'hm',d:'23 Feb–1 Mär',km:55,tag:'Taper Start',hf:'Z2–Z3',pace:'6:20–6:40',s:[{d:'Di',t:'run',n:'9 km easy',s:''},{d:'Mi',t:'gym',n:'Gym',s:''},{d:'Do',t:'tempo',n:'3×20 min @ 5:50–5:58',s:'letzte harte Woche'},{d:'Fr',t:'yoga',n:'Yoga',s:''},{d:'Sa',t:'run',n:'9 km easy',s:''},{d:'So',t:'long',n:'Long Run 26 km',s:''}]},
+  {n:37,p:'hm',d:'2–8 Mär',km:48,tag:'Taper',hf:'Z2',pace:'6:30–6:50',s:[{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'gym',n:'Gym leicht',s:''},{d:'Do',t:'tempo',n:'2×20 min @ 5:55–6:05',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'8 km easy',s:''},{d:'So',t:'long',n:'Long Run 22 km',s:''}]},
+  {n:38,p:'hm',d:'9–15 Mär',km:42,tag:'Taper',hf:'Z2',pace:'6:35–6:55',s:[{d:'Di',t:'run',n:'8 km easy',s:''},{d:'Mi',t:'yoga',n:'Yoga',s:''},{d:'Do',t:'tempo',n:'1×20 min @ 5:55–6:00',s:''},{d:'Fr',t:'swim',n:'Schwimmen',s:''},{d:'Sa',t:'run',n:'7 km easy',s:''},{d:'So',t:'long',n:'Long Run 18 km',s:''}]},
+  {n:39,p:'hm',d:'16–22 Mär',km:35,tag:'Taper',hf:'Z1–Z2',pace:'6:40–7:00',s:[{d:'Di',t:'run',n:'7 km easy',s:''},{d:'Mi',t:'gym',n:'Gym leicht',s:''},{d:'Do',t:'run',n:'6 km easy',s:''},{d:'Fr',t:'yoga',n:'Yoga',s:''},{d:'Sa',t:'run',n:'6 km easy',s:''},{d:'So',t:'long',n:'Long Run 14 km',s:''}]},
+  {n:40,p:'hm',d:'23–30 Mär',km:25,tag:'Race Week',hf:'Z1–Z2',pace:'locker',s:[{d:'Mo',t:'rest',n:'Rest',s:''},{d:'Di',t:'run',n:'5 km easy',s:'HF unter 145'},{d:'Mi',t:'yoga',n:'Yoga',s:''},{d:'Do',t:'run',n:'5 km locker + 3 Strides',s:''},{d:'Fr',t:'rest',n:'Rest',s:''},{d:'Sa',t:'run',n:'20 min Shakeout',s:''},{d:'So',t:'rest',n:'Rest + Vorbereitung',s:'Schlaf · Essen · Mental'}]},
+  {n:41,p:'hm',d:'31 Mär–11 Apr',km:0,tag:'Rennen',hf:'Z2–Z4',pace:'5:28 Ziel',s:[{d:'',t:'run',n:'Restliche Tage locker',s:'20–30 min · HF unter 140'},{d:'',t:'race',n:'ZÜRICH HALBMARATHON',s:'11. April 2027 · Ziel: sub 1:55'}]}
+];
+
+let openW=null,eS={},eSess={},curP='all';
+
+function filterW(p,el){curP=p;document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));el.classList.add('on');render();}
+function togW(n){openW=openW===n?null:n;render();}
+function startES(n,f,v){eS[n+'_'+f]=v;render();}
+function saveES(n,f){const k=n+'_'+f,i=document.getElementById('i_'+k);if(i){const w=data.find(x=>x.n===n);if(w){if(f==='km')w.km=parseInt(i.value)||w.km;else w[f]=i.value;}}delete eS[k];toast();render();}
+function startESess(n,si){eSess[n+'_'+si]=true;render();}
+function saveESess(n,si){const k=n+'_'+si,ne=document.getElementById('sn_'+k),se=document.getElementById('ss_'+k),w=data.find(x=>x.n===n);if(w&&w.s[si]){if(ne)w.s[si].n=ne.value;if(se)w.s[si].s=se.value;}delete eSess[k];toast();render();}
+function cancelE(n,si){delete eSess[n+'_'+si];render();}
+function addS(n){const w=data.find(x=>x.n===n);if(w){w.s.push({d:'',t:'run',n:'Neue Session',s:''});eSess[n+'_'+(w.s.length-1)]=true;render();}}
+
+function getBadge(p,tag){if(p==='done')return['bd-done','ti-check'];if(tag.includes('Rennen')||tag.includes('Test')||tag==='Race Week')return['bd-race','ti-trophy'];if(p==='cur')return['bd-cur','ti-player-play'];return['bd-fut','ti-calendar'];}
+function getTag(p,tag){if(p==='done')return'tg-done';if(p==='cur')return'tg-cur';if(tag.includes('Rennen')||tag.includes('Test'))return'tg-race';if(tag.includes('Reise')||tag.includes('SF')||tag.includes('Ferien'))return'tg-vac';return'tg-bld';}
+const pL={done:'Marjans Plan — abgeschlossen',cur:'Aktuell',build:'Aufbau und HM Vorbereitung',hm:'Zürich HM Vorbereitung'};
+
+function render(){
+  const f=data.filter(w=>curP==='all'||w.p===curP);
+  let h='',lp='';
+  f.forEach(w=>{
+    if(pL[w.p]!==lp){h+=`<div style="font-size:13px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:18px 20px 8px">${pL[w.p]}</div>`;lp=pL[w.p];}
+    const io=openW===w.n;
+    const[bc,bi]=getBadge(w.p,w.tag);
+    const tc=getTag(w.p,w.tag);
+    const cc=w.p==='cur'?'week-card cur':w.tag.includes('Reise')||w.tag.includes('SF')?'week-card vac':'week-card';
+    let st='';
+    [['km','km',w.km||'—'],['hf','HF Zone',w.hf||'—'],['pace','Pace',w.pace||'—']].forEach(([f2,lbl,val])=>{
+      const k=w.n+'_'+f2,ie=eS[k]!==undefined;
+      st+=`<div class="ws"><div class="ws-lbl">${lbl}</div><div class="ws-val">${ie?`<input id="i_${k}" value="${val}" onkeydown="if(event.key==='Enter')saveES(${w.n},'${f2}')"/><button class="edit-btn" onclick="saveES(${w.n},'${f2}')"><i class="ti ti-check"></i></button>`:`<span>${val}</span><button class="edit-btn" onclick="startES(${w.n},'${f2}','${val}')"><i class="ti ti-edit" style="font-size:12px"></i></button>`}</div></div>`;
+    });
+    let se='';
+    w.s.forEach((s,si)=>{
+      const k=w.n+'_'+si,ie=eSess[k],t2=T[s.t]||T.run;
+      se+=`<div class="s-row"><span class="s-day">${s.d}</span><div class="s-icon ${t2.c}"><i class="ti ${t2.i}"></i></div><div class="s-detail">${ie?`<div class="s-edit-area"><input id="sn_${k}" value="${s.n}"/><textarea id="ss_${k}" rows="2">${s.s}</textarea><div class="s-actions"><button class="s-btn save" onclick="saveESess(${w.n},${si})">Speichern</button><button class="s-btn" onclick="cancelE(${w.n},${si})">Abbrechen</button></div></div>`:`<div class="s-top"><div><div class="s-name">${s.n}</div>${s.s?`<div class="s-sub">${s.s}</div>`:''}</div><button class="s-edit-btn" onclick="startESess(${w.n},${si})"><i class="ti ti-edit"></i></button></div>`}</div></div>`;
+    });
+    h+=`<div class="${cc}"><div class="week-hdr" onclick="togW(${w.n})"><div class="week-badge ${bc}"><i class="ti ${bi}"></i></div><div class="winfo"><div class="wtitle">Woche ${w.n}</div><div class="wdate">${w.d}</div></div><div class="wright">${w.km?`<span class="wkm">${w.km} km</span>`:''}<span class="wtag ${tc}">${w.tag}</span></div><i class="ti ti-chevron-right chev ${io?'op':''}"></i></div><div class="week-body ${io?'op':''}"><div class="w-stats">${st}</div><div class="sessions">${se}<button class="add-row" onclick="addS(${w.n})"><i class="ti ti-plus"></i> Session hinzufügen</button></div></div></div>`;
+  });
+  document.getElementById('wlist').innerHTML=h;
+}
+</script>
+</body>
+</html>
